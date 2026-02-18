@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour //, IDamageable
 {
+    public List<Collider> colliders;
     public Animator animator;
 
     public CharacterController characterController;
@@ -20,6 +21,45 @@ public class Player : MonoBehaviour
     public KeyCode keyRun = KeyCode.LeftShift;
     public float speedRun = 1.5f;
 
+    [Header("Flash")]
+    public List<FlashColor> flashColors;
+
+    public HealthBase healthBase;
+
+    private bool _alive = true; 
+
+    private void OnValidate()
+    {
+        if(healthBase == null) healthBase = GetComponent<HealthBase>();
+    }
+
+    private void Awake()
+    {
+        OnValidate();
+
+        healthBase.OnDamage += Damage;
+        healthBase.OnDamage += OnKill;
+    }
+
+    private void OnKill(HealthBase h)
+    {
+        if (_alive)
+        {
+            _alive = false;
+            animator.SetTrigger("Death");
+            colliders.ForEach(i => i.enabled = false);
+        }
+    }
+    #region LIFE
+    public void Damage(HealthBase h)
+    {
+        flashColors.ForEach(i =>i.Flash());
+    }
+    public void Damage(float damage, Vector3 dir)
+    {
+       // Damage(damage);
+    }
+#endregion
     void Update()
     {
         transform.Rotate(0, Input.GetAxis("Horizontal")*turnSpeed*Time.deltaTime, 0);

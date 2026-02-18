@@ -1,55 +1,92 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using Animation;
 
 namespace Enemy
 {
 public class EnemyBase : MonoBehaviour
+{
+   
+    public float startLife = 10f;
+    [SerializeField] private float _currentLife;
+     [SerializeField]private AnimationBase _animationBase;
+
+    [Header("Start Animation")]
+    public float startAnimationDuration = .2f;
+    public Ease startAnimationEase = Ease.OutBack;
+    public bool startWithBornAnimation = true;
+
+    private void Awake()
     {
+        Init();
+    }
+    protected void ResetLife()
+    {
+        _currentLife = startLife;
+    }
+    protected virtual void Init()
+    {
+        ResetLife();
 
-        public float startLife = 10f;
-        [SerializeField] private float _currentLife;
+        if(startWithBornAnimation)
+            BornAnimation();
+    }
+    protected virtual void Kill()
+    {
+        OnKill();
+    }
+    protected virtual void OnKill()
+    {
+        Destroy(gameObject, 3f);
+        PlayAnimationByTrigger(AnimationType.DEATH);
+    }
 
-        private void Awake()
-        {
-            Init();
-        }
-        protected void ResetLife()
-        {
-            _currentLife = startLife;
-        }
-        protected virtual void Init()
-        {
-            ResetLife();
-        }
-        protected virtual void Kill()
-        {
-            OnKill();
-        }
-        protected virtual void OnKill()
-        {
-            Destroy(gameObject);
-        }
-
-        public void OnDamage(float f)
-        {
-            _currentLife -= f;
+    public void OnDamage(float f)
+    {
+        _currentLife -= f;
             
-            if(_currentLife <= 0)
-            {
-                Kill();
-            }
-        }
-
-        //debug
-
-        private void Update()
+        if(_currentLife <= 0)
         {
-            if (Input.GetKeyDown(KeyCode.T))
+            Kill();
+        }
+    }
+
+    #region ANIMATION
+    private void BornAnimation()
+    {
+        transform.DOScale(0, startAnimationDuration).SetEase(startAnimationEase);
+    }
+    public void PlayAnimationByTrigger(AnimationType animationType)
+        {
+            _animationBase.PlayAnimationByTrigger(animationType);
+        }
+
+    #endregion
+
+    public void Damage(float damage, Vector3 dir)
+        {
+            OnDamage(damage);
+            transform.DOMove(transform.position - dir, .1f);
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            Player p = collision.transform.GetComponent<Player>();
+            if (p != null)
             {
-                OnDamage(5f);
+                p.healthBase.Damage(1);
             }
         }
 
+        public virtual void Update()
+        {
+            if (lookAtPlayer)
+            {
+                transform.LookAt(_player.transform.position);
+            }
+        }
+   
     }
 }

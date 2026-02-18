@@ -14,7 +14,9 @@ public class GunShootLimit : GunBase
 
     private void Awake()
     {
+#pragma warning disable CS0612 // Type or member is obsolete
         GetAllUis();
+#pragma warning restore CS0612 // Type or member is obsolete
     }
 
     protected override IEnumerator StartShoot()
@@ -68,7 +70,7 @@ public class GunShootLimit : GunBase
     [System.Obsolete]
     private void GetAllUis()
     {
-        uIGunUpdaters = GameObject.FindObjectsByType<UIGunUpdater>().ToList();
+        uIGunUpdaters = GameObject.FindObjectsByType<UIGunUpdater>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).ToList();
         //eu não sei o que acontece, o chat diz que não há erro e eu copiei o vídeo passo a passo mas ainda aparece um CS1501 para esta linha ;-;
     }
 }
