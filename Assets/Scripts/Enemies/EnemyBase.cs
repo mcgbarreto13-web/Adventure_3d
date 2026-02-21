@@ -6,10 +6,13 @@ using Animation;
 
 namespace Enemy
 {
-public class EnemyBase : MonoBehaviour
+public class EnemyBase : MonoBehaviour, IDamageable
 {
-   
+   public Collider enemyCollider;
+   public FlashColor flashColor;
+   public ParticleSystem enemyParticleSystem;
     public float startLife = 10f;
+    public bool lookAtPlayer = false;
     [SerializeField] private float _currentLife;
      [SerializeField]private AnimationBase _animationBase;
 
@@ -18,11 +21,18 @@ public class EnemyBase : MonoBehaviour
     public Ease startAnimationEase = Ease.OutBack;
     public bool startWithBornAnimation = true;
 
+    private Player _player;
+
     private void Awake()
     {
         Init();
     }
-    protected void ResetLife()
+
+        private void Start()
+        {
+            _player = GameObject.FindFirstObjectByType<Player>();
+        }
+        protected void ResetLife()
     {
         _currentLife = startLife;
     }
@@ -39,12 +49,18 @@ public class EnemyBase : MonoBehaviour
     }
     protected virtual void OnKill()
     {
+        if(enemyCollider != null) enemyCollider.enabled = false;
         Destroy(gameObject, 3f);
         PlayAnimationByTrigger(AnimationType.DEATH);
     }
 
     public void OnDamage(float f)
     {
+        if(enemyParticleSystem != null) enemyParticleSystem.Emit(15);
+        if(flashColor != null) flashColor.Flash();
+
+        transform.position -= transform.forward;
+
         _currentLife -= f;
             
         if(_currentLife <= 0)
@@ -78,6 +94,7 @@ public class EnemyBase : MonoBehaviour
             {
                 p.healthBase.Damage(1);
             }
+            
         }
 
         public virtual void Update()
@@ -87,6 +104,17 @@ public class EnemyBase : MonoBehaviour
                 transform.LookAt(_player.transform.position);
             }
         }
-   
+
+        public void Damage(float damage)
+        {
+            Debug.Log("Damage");
+            OnDamage(damage);  
+        }
+        public void Damaging(float damage, Vector3 dir)
+        {
+            //OnDamage(damage); 
+            transform.DOMove(transform.position -dir, .1f); 
+        }
+      
     }
 }

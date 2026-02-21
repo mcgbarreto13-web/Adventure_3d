@@ -8,6 +8,8 @@ public class ProjectileBase : MonoBehaviour
    public int damageAmount = 1;
    public float speed = 50f;
 
+   public List<string> tagsToHit;
+
    private void Awake()
     {
         Destroy(gameObject, timeToDestroy);

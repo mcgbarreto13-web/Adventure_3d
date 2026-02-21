@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Player : MonoBehaviour //, IDamageable
+public class Player : MonoBehaviour, IDamageable
 {
     public List<Collider> colliders;
     public Animator animator;
@@ -97,5 +97,16 @@ public class Player : MonoBehaviour //, IDamageable
 
         animator.SetBool("Run", inputAxisVertical != 0);
 
+    }
+
+    public void Damage(float damage)
+    {
+        flashColors.ForEach(i => i.Flash());
+        EffectsManager.Instance.ChangeVignette();
+    }
+
+    public void Damaging(float damage, Vector3 dir)
+    {
+        Damage(damage);
     }
 }

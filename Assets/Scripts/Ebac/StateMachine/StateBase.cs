@@ -6,7 +6,7 @@ namespace Ebac.StateMachine
 {
     public class StateBase : MonoBehaviour
 {
-   public virtual void OnStateEnter()
+   public virtual void OnStateEnter(params object[] objs)
     {
         Debug.Log("OnStateEnter");
     }
