@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -15,11 +16,16 @@ namespace Boss
     }
 public class BossBase : MonoBehaviour
 {
-    [Header("animation")]
+    [Header("Animation")]
     public float startAnimationDuration =  .5f;
     public Ease startAnimationEase = Ease.OutBack;   
+
+    [Header("Attack")]
     public int attackAmount = 5;
     public float timeBetweenAttacks = .5f;
+
+
+   
 
     public float speed = 5f;
     public List<Transform> wayPoints;
@@ -36,7 +42,7 @@ public class BossBase : MonoBehaviour
     {
         Init();
         OnValidate();
-        healthBase.OnKill += BossKill;
+        healthBase.OnKill += OnBossKill;
     }
 
     private void Init()
@@ -46,22 +52,48 @@ public class BossBase : MonoBehaviour
 
         stateMachine.RegisterStates(BossAction.INIT, new BossStateInit());
         stateMachine.RegisterStates(BossAction.WALK, new BossStateWalk());
+        stateMachine.RegisterStates(BossAction.ATTACK, new BossStateAttack());
 
     }
+
+    private void OnBossKill(HealthBase h)
+        {
+            
+        }
     #region WALK
   
-    public void GoToRandomPoint()
+    public void GoToRandomPoint(Action onArrive = null)
         {
-            StartCoroutine(GoToPointCoroutine(wayPoints[Random.Range(0, wayPoints.Count)]));
+            StartCoroutine(GoToPointCoroutine(wayPoints[UnityEngine.Random.Range(0, wayPoints.Count)], onArrive));
         }
 
-    IEnumerator GoToPointCoroutine(Transform t)
+    IEnumerator GoToPointCoroutine(Transform t, Action onArrive = null)
         {
             while(Vector3.Distance(transform.position, t.position) > 1f)
             {
                 transform.position = Vector3.MoveTowards(transform.position, t.position, Time.deltaTime * speed);
                 yield return new WaitForEndOfFrame();
             }
+            onArrive?.Invoke();
+        }
+    #endregion
+
+    #region ATTACK
+    public void StartAttack(Action endCallBack = null)
+        {
+            StartCoroutine(AttackCoroutine(endCallBack));
+        }
+    IEnumerator AttackCoroutine(Action endCallback)
+        {
+            int attacks = 0;
+            while (attacks < attackAmount)
+            {
+                attacks ++;
+                transform.DOScale(1.1f, .1f).SetLoops(2, LoopType.Yoyo);
+                yield return new WaitForSeconds(timeBetweenAttacks);
+            }
+
+            endCallback?.Invoke();
         }
     #endregion
 
@@ -78,10 +110,15 @@ public class BossBase : MonoBehaviour
         {
             SwitchState(BossAction.INIT);
         }
-        [NaughtyAttributes.Button]
+    [NaughtyAttributes.Button]
     private void SwitchWalk()
         {
             SwitchState(BossAction.WALK);
+        }
+    [NaughtyAttributes.Button]
+     private void SwitchAttack()
+        {
+            SwitchState(BossAction.ATTACK);
         }
     #endregion
 

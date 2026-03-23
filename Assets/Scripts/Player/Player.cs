@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Core.Singleton;
+using Clothes;
 
-public class Player : MonoBehaviour, IDamageable
+public class Player : Singleton<Player>//, IDamageable
 {
     public List<Collider> colliders;
     public Animator animator;
@@ -24,21 +26,28 @@ public class Player : MonoBehaviour, IDamageable
     [Header("Flash")]
     public List<FlashColor> flashColors;
 
+    [Header("Life")]
     public HealthBase healthBase;
+    //public UiFillUpdater iuGunUpdater;
+
+    [Space]
+    [SerializeField] private ClothesChanger _clothesChanger;
 
     private bool _alive = true; 
+    private bool _jumping = false;
 
     private void OnValidate()
     {
         if(healthBase == null) healthBase = GetComponent<HealthBase>();
     }
 
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         OnValidate();
 
         healthBase.OnDamage += Damage;
-        healthBase.OnDamage += OnKill;
+        healthBase.OnDamage += OnKill; 
     }
 
     private void OnKill(HealthBase h)
@@ -69,10 +78,20 @@ public class Player : MonoBehaviour, IDamageable
 
         if (characterController.isGrounded)
         {
+            if (_jumping)
+            {
+                _jumping = false;
+                animator.SetTrigger("Land");
+            }
             vSpeed = 0;
             if (Input.GetKeyDown(jumpKeyCode))
             {
                 vSpeed = jumpSpeed;
+                if (!_jumping)
+                {
+                    _jumping = true;
+                    animator.SetTrigger("Jump");   
+                }
             }
         }
 
@@ -108,5 +127,29 @@ public class Player : MonoBehaviour, IDamageable
     public void Damaging(float damage, Vector3 dir)
     {
         Damage(damage);
+    }
+
+    public void ChangeSpeed(float speed, float duration)
+    {
+        StartCoroutine(ChangeSpeedCoroutine(speed, duration));
+    }
+
+    IEnumerator ChangeSpeedCoroutine(float localSpeed, float duration)
+    {
+        var defaultSpeed = speed;
+        speed = localSpeed;
+        yield return new WaitForSeconds(duration);
+        speed = defaultSpeed;
+    }
+
+    public void ChangeTexture(ClothesSetup setup, float duration)
+    {
+         StartCoroutine(ChangeTextureCoroutine(setup, duration));
+    }
+    IEnumerator ChangeTextureCoroutine(ClothesSetup setup, float duration)
+    {
+       _clothesChanger.ChangeTexture(setup);
+        yield return new WaitForSeconds(duration);
+        _clothesChanger.ResetTexture();
     }
 }

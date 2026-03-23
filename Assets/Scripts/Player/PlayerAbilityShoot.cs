@@ -10,14 +10,15 @@ public class PlayerAbilityShoot : PlayerAbilityBase
     public Transform gunPosition;
 
     private GunBase _currentGun;
+    public FlashColor _flashColor;
     protected override void Init()
     {
         base.Init();
 
         CreateGun();
 
-       inputs.Gameplay.Shoot.performed += ctx => StartShoot();
-        inputs.Gameplay.Shoot.canceled += ctx => CancelShoot();
+       inputs.Gameplay.Shoot.performed += cts => StartShoot();
+        inputs.Gameplay.Shoot.canceled += cts => CancelShoot();
 
     }
 
@@ -30,7 +31,8 @@ public class PlayerAbilityShoot : PlayerAbilityBase
 
     private void StartShoot()
     {
-        _currentGun.StartShooting();
+        _currentGun.StartShooting(); 
+        _flashColor?.Flash();
         Debug.Log("Start Shoot");
     }
     private void CancelShoot()

@@ -30,9 +30,28 @@ public class BossStateWalk : BossStateBase
         {
             base.OnStateEnter(objs);
             boss.GoToRandomPoint();
-         
+        }
+
+        private void OnArrive()
+        {
+            boss.SwitchState(BossAction.ATTACK);
         }
     }
-
+public class BossStateAttack : BossStateBase
+    {
+        public override void OnStateEnter(params object[] objs)
+        {
+            base.OnStateEnter(objs);
+            boss.StartAttack();
+        }
+        private void EndAttacks()
+        {
+            boss.SwitchState(BossAction.WALK);
+        }
+    }
+public class BossStateDead : BossStateBase
+    {
+        
+    }
 }
 

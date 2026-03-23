@@ -126,8 +126,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc9f153b66debc84ca6957a0b1227713, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GunBase
-  prefabProjectile: {fileID: 8514940405187770990, guid: 580974b62440bae4d9a1546c1454aa09, type: 3}
-  positionToShoot: {fileID: 0}
+  prefabProjectile: {fileID: 2337678350590635784, guid: 580974b62440bae4d9a1546c1454aa09, type: 3}
+  positionToShoot: {fileID: 3056324697294948521}
   timeBetweenShots: 0.3
   speed: 50
 --- !u!1 &4332390018266982951
