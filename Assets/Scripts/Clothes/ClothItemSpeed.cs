@@ -10,7 +10,7 @@ public class ClothItemSpeed : ClothItemBase
     public override void Collect()
         {
             base.Collect();
-            Player.Instance.ChangeSpeed(targetSpeed, duration);
+            PlayerBase.Instance.ChangeSpeed(targetSpeed, duration);
         }
 }  
 }

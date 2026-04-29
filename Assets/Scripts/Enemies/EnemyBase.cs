@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using DG.Tweening;
 using Animation;
 
@@ -21,7 +20,11 @@ public class EnemyBase : MonoBehaviour, IDamageable
     public Ease startAnimationEase = Ease.OutBack;
     public bool startWithBornAnimation = true;
 
-    private Player _player;
+    [Header("Events")]
+    public UnityEvent OnKillEvent;
+
+
+    private PlayerBase _player;
 
     private void Awake()
     {
@@ -30,7 +33,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
         private void Start()
         {
-            _player = GameObject.FindFirstObjectByType<Player>();
+            _player = GameObject.FindFirstObjectByType<PlayerBase>();
         }
         protected void ResetLife()
     {
@@ -52,6 +55,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
         if(enemyCollider != null) enemyCollider.enabled = false;
         Destroy(gameObject, 3f);
         PlayAnimationByTrigger(AnimationType.DEATH);
+        OnKillEvent?.Invoke();
     }
 
     public void OnDamage(float f)
@@ -89,7 +93,7 @@ public class EnemyBase : MonoBehaviour, IDamageable
 
         private void OnCollisionEnter(Collision collision)
         {
-            Player p = collision.transform.GetComponent<Player>();
+            PlayerBase p = collision.transform.GetComponent<PlayerBase>();
             if (p != null)
             {
                 p.healthBase.Damage(1);

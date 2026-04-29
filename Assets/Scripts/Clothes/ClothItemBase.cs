@@ -21,7 +21,7 @@ public class ClothItemBase : MonoBehaviour
             Debug.Log("Collect");
 
             var setup = ClothesManager.Instance.GetSetupByType(clothType);
-            Player.Instance.ChangeTexture(setup, duration);
+            PlayerBase.Instance.ChangeTexture(setup, duration);
             HideObject();
         }
 

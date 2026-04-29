@@ -40,11 +40,17 @@ public class ChestBase : MonoBehaviour
     private void ShowItem()
     {
         chestItem.ShowItem();
+        Invoke(nameof(CollectItem), 1f);
+    }
+
+    private void CollectItem()
+    {
+        chestItem.Collect();
     }
 
     public void OnTriggerEnter(Collider other)
     {
-        Player p = other.transform.GetComponent<Player>();
+        PlayerBase p = other.transform.GetComponent<PlayerBase>();
         if(p != null)
         {
             ShowNotification();
@@ -53,7 +59,7 @@ public class ChestBase : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        Player p = other.transform.GetComponent<Player>();
+        PlayerBase p = other.transform.GetComponent<PlayerBase>();
         if(p != null)
         {
             HideNotification();

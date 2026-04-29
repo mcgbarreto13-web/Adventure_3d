@@ -10,7 +10,7 @@ public class ClothItemStrong : ClothItemBase
     public override void Collect()
         {
             base.Collect();
-            Player.Instance.healthBase.ChangeDamageMultiply(damageMultiply, duration);
+            PlayerBase.Instance.healthBase.ChangeDamageMultiply(damageMultiply, duration);
         }
 }  
 }

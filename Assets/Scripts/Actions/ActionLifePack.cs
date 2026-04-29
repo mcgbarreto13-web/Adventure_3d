@@ -18,7 +18,7 @@ public class ActionLifePack : MonoBehaviour
         if(soInt.Value > 0)
         {
             ItemManager.Instance.RemoveByType(ItemType.LIFE_PACK);
-            Player.Instance.healthBase.ResetLife();
+            PlayerBase.Instance.healthBase.ResetLife();
         }
     }
 

@@ -13,7 +13,7 @@ public class HealthBase : MonoBehaviour, IDamageable
     public Action<HealthBase> OnDamage;
     public Action<HealthBase> OnKill;
 
-    //public List<UIFillUpdater> uiGunUpdater;
+    public List<UIGunUpdater> uiGunUpdater;
 
     public float damageMultiply = 1; 
 
@@ -30,7 +30,7 @@ public class HealthBase : MonoBehaviour, IDamageable
     public void ResetLife()
     {
         _currentLife = startLife;
-        //UpdateUI();
+        UpdateUI();
     }
 
     protected virtual void Kill()
@@ -72,5 +72,16 @@ public class HealthBase : MonoBehaviour, IDamageable
        this.damageMultiply = damageMultiply; 
         yield return new WaitForSeconds(duration);
         this.damageMultiply = 1;
+    }
+
+    private void UpdateUI()
+    {
+        if(uiGunUpdater != null)
+        {
+            foreach(UIGunUpdater updater in uiGunUpdater)
+            {
+                updater.UpdateValue((float)_currentLife/startLife);
+            }
+        }
     }
 }

@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Items
 {
    public class CollectableBase : MonoBehaviour
 {
+    public SFXType sfxType;
     public ItemType itemType;
 
     public string compareTag = "Player";
@@ -29,8 +28,14 @@ namespace Items
             Collect();
         }
     }
+
+    private void PlaySFX()
+        {
+            SFXPool.Instance.Play(sfxType);
+        }
     protected virtual void Collect()
     {
+        PlaySFX();
         if(itemCollider != null) itemCollider.enabled = false;
         if (graphicItem != null) graphicItem.SetActive(false);
         Invoke("HideObject", timeToHide);

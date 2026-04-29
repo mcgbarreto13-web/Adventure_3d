@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Ebac.StateMachine;
 
@@ -29,12 +27,19 @@ public class BossStateWalk : BossStateBase
         public override void OnStateEnter(params object[] objs)
         {
             base.OnStateEnter(objs);
-            boss.GoToRandomPoint();
+            boss.GoToRandomPoint(OnArrive);
         }
 
         private void OnArrive()
         {
             boss.SwitchState(BossAction.ATTACK);
+        }
+
+        public override void OnStateExit()
+        {
+            Debug.Log("Exit Walk");
+            base.OnStateExit();
+            boss.StopAllCoroutines();
         }
     }
 public class BossStateAttack : BossStateBase
@@ -42,16 +47,27 @@ public class BossStateAttack : BossStateBase
         public override void OnStateEnter(params object[] objs)
         {
             base.OnStateEnter(objs);
-            boss.StartAttack();
+            boss.StartAttack(EndAttacks);
         }
         private void EndAttacks()
         {
             boss.SwitchState(BossAction.WALK);
         }
+         public override void OnStateExit()
+        {
+            base.OnStateExit();
+            boss.StopAllCoroutines();
+            Debug.Log ("Exit Attack");
+        }
     }
 public class BossStateDead : BossStateBase
     {
-        
+        public override void OnStateEnter(params object[] objs)
+        {
+            base.OnStateEnter(objs);
+            Debug.Log("Enter Death");
+            boss.transform.localScale = Vector3.one * .2f;
+        }
     }
 }
 

@@ -12,7 +12,8 @@ namespace Boss
         INIT,
         IDLE,
         WALK,
-        ATTACK
+        ATTACK,
+        DEATH
     }
 public class BossBase : MonoBehaviour
 {
@@ -28,7 +29,7 @@ public class BossBase : MonoBehaviour
    
 
     public float speed = 5f;
-    public List<Transform> wayPoints;
+    public List<Transform> bossWayPoints;
 
     public HealthBase healthBase;
     private StateMachine<BossAction> stateMachine;
@@ -42,7 +43,10 @@ public class BossBase : MonoBehaviour
     {
         Init();
         OnValidate();
-        healthBase.OnKill += OnBossKill;
+       if(healthBase != null)
+            {
+                 healthBase.OnKill += OnBossKill;
+            }
     }
 
     private void Init()
@@ -53,18 +57,20 @@ public class BossBase : MonoBehaviour
         stateMachine.RegisterStates(BossAction.INIT, new BossStateInit());
         stateMachine.RegisterStates(BossAction.WALK, new BossStateWalk());
         stateMachine.RegisterStates(BossAction.ATTACK, new BossStateAttack());
+        stateMachine.RegisterStates(BossAction.DEATH, new BossStateDead());
+
 
     }
 
     private void OnBossKill(HealthBase h)
         {
-            
+            SwitchState(BossAction.DEATH);
         }
     #region WALK
   
     public void GoToRandomPoint(Action onArrive = null)
         {
-            StartCoroutine(GoToPointCoroutine(wayPoints[UnityEngine.Random.Range(0, wayPoints.Count)], onArrive));
+            StartCoroutine(GoToPointCoroutine(bossWayPoints[UnityEngine.Random.Range(0, bossWayPoints.Count)], onArrive));
         }
 
     IEnumerator GoToPointCoroutine(Transform t, Action onArrive = null)
